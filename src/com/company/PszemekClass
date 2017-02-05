@@ -18,6 +18,11 @@ import java.util.List;
 
 public class PszemekClass {
 
+    public static final String FILE_PATH = "C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java";
+    public static final String CLASS_FOLDER_PATH = "C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\";
+    public static final String TEST_STRING_1 = "package com.company.tmp; public class Test { public void a() { System.out.println(\"a\"); } }";
+    public static final String TEST_STRING_2 = "package com.company.tmp; public class Test { public void a() { System.out.println(\"b\"); } }";
+
     static interface Doer {
         void doSth() throws InvocationTargetException, IllegalAccessException;
     }
@@ -38,18 +43,9 @@ public class PszemekClass {
     }
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InvocationTargetException, NoSuchMethodException, InstantiationException, IllegalAccessException {
-        String testA = "package com.company.tmp; public class Test { public void a() { System.out.println(\"a\"); } }";
-        Files.write(Paths.get("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java"),testA.getBytes());
-//        Files.write(Paths.get("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\out\\production\\ClassLoaderHello\\com\\company\\tmp\\Test.java"),testA.getBytes());
-        compile("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java");
-        Doer doer1 = run("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\", "com.company.tmp.Test", "a");
 
-        String testA2 = "package com.company.tmp; public class Test { public void a() { System.out.println(\"b\"); } }";
-        Files.write(Paths.get("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java"),testA2.getBytes());
-        compile("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java");
-        Doer doer2 = run("C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\", "com.company.tmp.Test","a");
-        doer1.doSth();
-        doer2.doSth();
+        runCodeInput(TEST_STRING_1, "com.company.tmp.Test");
+        runCodeInput(TEST_STRING_2, "com.company.tmp.Test");
     }
 
     private static Doer run(String classPath, String className, String methodName) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
@@ -68,4 +64,13 @@ public class PszemekClass {
         return doer;
     }
 
+    private static void runCodeInput(String code, String className) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException, ClassNotFoundException {
+        compileCodeInput(code);
+        run(CLASS_FOLDER_PATH, className, "a");
+    }
+
+    private static void compileCodeInput(String code) throws IOException {
+        Files.write(Paths.get(FILE_PATH),code.getBytes());
+        compile(FILE_PATH);
+    }
 }
