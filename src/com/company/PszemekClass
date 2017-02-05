@@ -7,7 +7,6 @@ import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
@@ -18,14 +17,11 @@ import java.util.List;
 
 public class PszemekClass {
 
-    public static final String FILE_PATH = "C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java";
-    public static final String CLASS_FOLDER_PATH = "C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\";
-    public static final String TEST_STRING_1 = "package com.company.tmp; public class Test { public void a() { System.out.println(\"a\"); } }";
-    public static final String TEST_STRING_2 = "package com.company.tmp; public class Test { public void a() { System.out.println(\"b\"); } }";
+    private static final String FILE_PATH = "C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\com\\company\\tmp\\Test.java";
+    private static final String CLASS_FOLDER_PATH = "C:\\Users\\Elka\\IdeaProjects\\ClassLoaderHello\\src\\";
+    private static final String TEST_STRING_1 = "package com.company.tmp; import com.company.BomberInterface; public class Test implements BomberInterface { public void run() { System.out.println(\"a\"); } }";
+    private static final String TEST_STRING_2 = "package com.company.tmp; import com.company.BomberInterface; public class Test implements BomberInterface { public void run() { System.out.println(\"b\"); } }";
 
-    static interface Doer {
-        void doSth() throws InvocationTargetException, IllegalAccessException;
-    }
 
     static void compile(String name) throws IOException {
 
@@ -48,25 +44,17 @@ public class PszemekClass {
         runCodeInput(TEST_STRING_2, "com.company.tmp.Test");
     }
 
-    private static Doer run(String classPath, String className, String methodName) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
+    private static void run(String classPath, String className) throws MalformedURLException, ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException {
         URL[] urls = {new URL("file:"+classPath)};
         final URLClassLoader urlClassLoader = new URLClassLoader(urls);
         Class<?> aClass = urlClassLoader.loadClass(className);
-        final Method method = aClass.getMethod(methodName);
         final Object o = aClass.newInstance();
-        Doer doer = new Doer() {
-            @Override
-            public void doSth() throws InvocationTargetException, IllegalAccessException {
-                method.invoke(o);
-            }
-        };
-        doer.doSth();
-        return doer;
+        ((BomberInterface) o).run();
     }
 
     private static void runCodeInput(String code, String className) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException, InstantiationException, IOException, ClassNotFoundException {
         compileCodeInput(code);
-        run(CLASS_FOLDER_PATH, className, "a");
+        run(CLASS_FOLDER_PATH, className);
     }
 
     private static void compileCodeInput(String code) throws IOException {
